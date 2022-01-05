@@ -20,29 +20,33 @@ rocketBoard.addComponent(
 /* Create to show Custom model
   https://docs.decentraland.org/development-guide/utils/#triggers
 */
+let triggerBox = new utils.TriggerBoxShape(
+	new Vector3(3,1,3), // position?
+)
 
-//rocketBoard.addComponent(
-//  new utils.TriggerComponent(
-//    new utils.TriggerBoxShape(
-//	  	new Vector3(1,3,1),
-//	  	Vector3.Zero()
-//	),
-//    {
-//      onCameraEnter: () => {
-//          activateMotor(true)
-//      },
-//      onCameraExit: () => {
-//         activateMotor(false)
-//      },
-//    }
-//  )
-//);
+rocketBoard.addComponent(
+  new utils.TriggerComponent(
+    triggerBox, //shape
+    {
+      onCameraEnter : () => {
+	     log('triggered!')
+       //motor.getComponent(Transform).scale = new Vector3(5,5,5)
+		 log(rocketBoard)
+         motor.getComponent(Transform).scale.setAll(5)
+      }
+      onCameraExit: () => {
+	     log('out!')
+         motor.getComponent(Transform).scale = new Vector3(0,0,0)
+      }
+    }
+  )
+);
 engine.addEntity(rocketBoard)
 
-//const motor = new Entity()
-//motor.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
-//motor.addComponent(new GLTFShape("models/motor.glb"))
-//motor.setParent(rocketBoard)
+const motor = new Entity()
+motor.addComponent(new Transform({ scale: new Vector3(5, 5, 5) }))
+motor.addComponent(new GLTFShape("models/rocketFlames.glb"))
+motor.setParent(rocketBoard)
 
 const rocketFlames = new Entity()
 rocketFlames.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
@@ -187,11 +191,11 @@ function activateRocketBooster(isOn: boolean) {
   }
 }
 
-//// Activate Motor
-//function activateMotor(show: boolean) {
-//  if (show) {
-//    motor.getComponent(Transform).scale.setAll(1)
-//  } else {
-//    motor.getComponent(Transform).scale.setAll(0)
-//  }
-//}
+// Activate Motor
+function activateMotor(show: boolean) {
+  if (show) {
+    motor.getComponent(Transform).scale.setAll(1)
+  } else {
+    motor.getComponent(Transform).scale.setAll(0)
+  }
+}
