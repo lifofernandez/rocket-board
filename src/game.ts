@@ -1,30 +1,55 @@
-import { Sound } from "./sound"
-import { Ring } from "./ring"
+import * as utils from '@dcl/ecs-scene-utils'
 
 /*
   IMPORTANT: The tsconfig.json has been configured to include "node_modules/cannon/build/cannon.js"
 */
 
-// Create base
-const baseScene: Entity = new Entity()
-baseScene.addComponent(new GLTFShape("models/baseLargeCheckered.glb"))
-engine.addEntity(baseScene)
+const motor = new Entity()
+motor.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
+motor.addComponent(new GLTFShape("models/engine.glb"))
 
-// Create ring
-const ring = new Ring(new GLTFShape("models/ring.glb"), new Vector3(40, 12, 40), 2)
-ring.getComponent(Transform).scale.setAll(2.5)
 
 // Create rocket board
 const rocketBoard = new Entity()
 rocketBoard.addComponent(new Transform({ position: new Vector3(12, 2, 12), scale: new Vector3(1, 1, 1) }))
 rocketBoard.addComponent(new GLTFShape("models/rocketBoard.glb"))
+
+rocketBoard.addComponent(
+  new AvatarModifierArea({
+    area: { box: new Vector3(1, 3, 1) },
+    modifiers: [AvatarModifiers.HIDE_AVATARS],
+  })
+);
+
+/* Create to show Custom model
+  https://docs.decentraland.org/development-guide/utils/#triggers
+*/
+
+rocketBoard.addComponent(
+  new utils.TriggerComponent(
+    new utils.TriggerBoxShape(
+	  	new Vector3(1,3,1),
+	  	Vector3.Zero()
+	),
+    {
+      onCameraEnter: () => {
+          motor.getComponent(Transform).scale.setAll(1)
+      },
+      onCameraExit: () => {
+ 		  motor.getComponent(Transform).scale.setAll(0)
+      },
+    }
+  )
+)
+
 engine.addEntity(rocketBoard)
+
+motor.setParent(rocketBoard)
 
 const rocketFlames = new Entity()
 rocketFlames.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
 rocketFlames.addComponent(new GLTFShape("models/rocketFlames.glb"))
 rocketFlames.setParent(rocketBoard)
-const rocketBoosterSound = new Sound(new AudioClip("sounds/rocketBooster.mp3"), true) // Rocket booster sound
 
 // Useful vectors
 let forwardVector: Vector3 = Vector3.Forward().rotate(Camera.instance.rotation) // Camera's forward vector
@@ -158,10 +183,8 @@ input.subscribe("BUTTON_UP", ActionButton.SECONDARY, false, () => {
 // Activate booster animation
 function activateRocketBooster(isOn: boolean) {
   if (isOn) {
-    rocketBoosterSound.getComponent(AudioSource).playing = true
     rocketFlames.getComponent(Transform).scale.setAll(1)
   } else {
-    rocketBoosterSound.getComponent(AudioSource).playing = false
     rocketFlames.getComponent(Transform).scale.setAll(0)
   }
 }
