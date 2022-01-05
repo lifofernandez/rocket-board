@@ -21,7 +21,7 @@ rocketBoard.addComponent(
   https://docs.decentraland.org/development-guide/utils/#triggers
 */
 let triggerBox = new utils.TriggerBoxShape(
-	new Vector3(3,1,3), // position?
+	new Vector3(3,3,3), // position?
 )
 
 rocketBoard.addComponent(
@@ -31,7 +31,7 @@ rocketBoard.addComponent(
       onCameraEnter : () => {
 	     log('triggered!')
        //motor.getComponent(Transform).scale = new Vector3(5,5,5)
-		 log(rocketBoard)
+		 //log(rocketBoard)
          motor.getComponent(Transform).scale.setAll(5)
       }
       onCameraExit: () => {
