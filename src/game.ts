@@ -4,10 +4,6 @@ import * as utils from '@dcl/ecs-scene-utils'
   IMPORTANT: The tsconfig.json has been configured to include "node_modules/cannon/build/cannon.js"
 */
 
-const motor = new Entity()
-motor.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
-motor.addComponent(new GLTFShape("models/engine.glb"))
-
 
 // Create rocket board
 const rocketBoard = new Entity()
@@ -33,17 +29,21 @@ rocketBoard.addComponent(
 	),
     {
       onCameraEnter: () => {
-          motor.getComponent(Transform).scale.setAll(1)
+          //motor.getComponent(Transform).scale.setAll(1)
+          activateMotor(true)
       },
       onCameraExit: () => {
- 		  motor.getComponent(Transform).scale.setAll(0)
+ 		 //motor.getComponent(Transform).scale.setAll(0)
+         activateMotor(false)
       },
     }
   )
-)
-
+);
 engine.addEntity(rocketBoard)
 
+const motor = new Entity()
+motor.addComponent(new Transform({ scale: new Vector3(0, 0, 0) }))
+motor.addComponent(new GLTFShape("models/motor.glb"))
 motor.setParent(rocketBoard)
 
 const rocketFlames = new Entity()
@@ -186,5 +186,14 @@ function activateRocketBooster(isOn: boolean) {
     rocketFlames.getComponent(Transform).scale.setAll(1)
   } else {
     rocketFlames.getComponent(Transform).scale.setAll(0)
+  }
+}
+
+// Activate Motor
+function activateMotor(show: boolean) {
+  if (show) {
+    motor.getComponent(Transform).scale.setAll(1)
+  } else {
+    motor.getComponent(Transform).scale.setAll(0)
   }
 }
